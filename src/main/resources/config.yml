@@ -1,0 +1,17 @@
+# SidebarStats config
+
+# How often the sidebar refreshes, in ticks (20 ticks = 1 second)
+update-interval-ticks: 20
+
+# Title shown at the top of the scoreboard
+title: "&b&lSTATS"
+
+# Name of the token plugin to look for if Vault isn't hooked / doesn't return
+# what you want. This is the plugin.yml "name:" of that plugin, exactly as it
+# appears in /plugins.
+token-plugin-name: "DigitalTokens"
+
+# If true, tries Vault's economy first (works if DigitalTokens registers
+# itself as a Vault economy provider). If false, skips straight to the
+# reflection fallback against token-plugin-name.
+use-vault-first: true

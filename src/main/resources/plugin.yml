@@ -1,0 +1,20 @@
+name: SidebarStats
+version: '${project.version}'
+main: net.yourserver.sidebarstats.SidebarStats
+api-version: '1.21'
+author: you
+description: Right-side scoreboard showing Kills, Deaths, K/D, Best Streak, Tokens, Playtime (Level later)
+
+softdepend: [Vault, DigitalTokens]
+
+commands:
+  sidebarstats:
+    description: Reload SidebarStats config
+    usage: /sidebarstats reload
+    permission: sidebarstats.admin
+    permission-message: You don't have permission to do that.
+
+permissions:
+  sidebarstats.admin:
+    description: Allows reloading SidebarStats
+    default: op
