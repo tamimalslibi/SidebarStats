@@ -1,6 +1,7 @@
 package net.yourserver.sidebarstats;
 
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import io.papermc.paper.scoreboard.numbers.NumberFormat;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,10 +25,10 @@ public class ScoreboardTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        String title = plugin.getConfig().getString("title", "&b&lSTATS").replace('&', '\u00A7');
-
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             Scoreboard board = boards.computeIfAbsent(player, p -> plugin.getServer().getScoreboardManager().getNewScoreboard());
+
+            String title = "\u00A76\u00A7l" + player.getName();
 
             Objective objective = board.getObjective("sidebarstats");
             if (objective == null) {
@@ -38,7 +39,8 @@ public class ScoreboardTask extends BukkitRunnable {
                 objective.displayName(LegacyComponentSerializer.legacySection().deserialize(title));
             }
 
-            // Clear old entries so removed/changed lines don't linger
+            objective.numberFormat(NumberFormat.blank());
+
             for (String entry : board.getEntries()) {
                 board.resetScores(entry);
             }
@@ -50,8 +52,6 @@ public class ScoreboardTask extends BukkitRunnable {
             long tokens = tokenHook.getTokens(player);
             String tokensDisplay = tokens < 0 ? "N/A" : String.valueOf(tokens);
             String playtime = formatPlaytime(player.getStatistic(Statistic.PLAY_ONE_MINUTE));
-            // Level tracked but not shown yet, per "Level (later)"
-            int level = player.getLevel();
 
             String[] lines = new String[] {
                 "\u00A77Kills: \u00A7f" + kills,
@@ -59,7 +59,9 @@ public class ScoreboardTask extends BukkitRunnable {
                 "\u00A77K/D: \u00A7f" + String.format("%.2f", kd),
                 "\u00A77Best Streak: \u00A7f" + bestStreak,
                 "\u00A77Tokens: \u00A7f" + tokensDisplay,
-                "\u00A77Playtime: \u00A7f" + playtime
+                "\u00A77Playtime: \u00A7f" + playtime,
+                "\u00A70",
+                "\u00A76play.vertexffa.net"
             };
 
             int score = lines.length;
@@ -72,7 +74,6 @@ public class ScoreboardTask extends BukkitRunnable {
             }
         }
 
-        // Clean up entries for players who logged off
         boards.keySet().removeIf(p -> !p.isOnline());
     }
 
