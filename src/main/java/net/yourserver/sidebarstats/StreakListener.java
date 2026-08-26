@@ -8,14 +8,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-/**
- * Kills, deaths, playtime and level are already tracked natively by Minecraft
- * (Statistic.PLAYER_KILLS, Statistic.DEATHS, Statistic.PLAY_ONE_MINUTE,
- * Player#getLevel()), so we don't need to track those ourselves.
- *
- * "Best streak" isn't a vanilla stat, so we track current/best streak per
- * player in a PersistentDataContainer, which survives relogs and restarts.
- */
 public class StreakListener implements Listener {
 
     private final NamespacedKey currentStreakKey;
@@ -57,5 +49,11 @@ public class StreakListener implements Listener {
         PersistentDataContainer pdc = player.getPersistentDataContainer();
         NamespacedKey key = new NamespacedKey(plugin, "best_streak");
         return pdc.getOrDefault(key, PersistentDataType.INTEGER, 0);
+    }
+
+    public static void resetBestStreak(Player player, SidebarStats plugin) {
+        PersistentDataContainer pdc = player.getPersistentDataContainer();
+        pdc.set(new NamespacedKey(plugin, "best_streak"), PersistentDataType.INTEGER, 0);
+        pdc.set(new NamespacedKey(plugin, "current_streak"), PersistentDataType.INTEGER, 0);
     }
 }
