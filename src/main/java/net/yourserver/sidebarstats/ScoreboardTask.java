@@ -10,22 +10,43 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class ScoreboardTask extends BukkitRunnable {
 
     private final SidebarStats plugin;
     private final TokenHook tokenHook;
     private final Map<Player, Scoreboard> boards = new HashMap<>();
+    private final Set<UUID> hidden = new HashSet<>();
 
     public ScoreboardTask(SidebarStats plugin, TokenHook tokenHook) {
         this.plugin = plugin;
         this.tokenHook = tokenHook;
     }
 
+    public boolean toggle(Player player) {
+        UUID id = player.getUniqueId();
+        if (hidden.contains(id)) {
+            hidden.remove(id);
+            return false;
+        } else {
+            hidden.add(id);
+            player.setScoreboard(plugin.getServer().getScoreboardManager().getMainScoreboard());
+            boards.remove(player);
+            return true;
+        }
+    }
+
     @Override
     public void run() {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
+            if (hidden.contains(player.getUniqueId())) {
+                continue;
+            }
+
             Scoreboard board = boards.computeIfAbsent(player, p -> plugin.getServer().getScoreboardManager().getNewScoreboard());
 
             String title = "\u00A76\u00A7l" + player.getName();
