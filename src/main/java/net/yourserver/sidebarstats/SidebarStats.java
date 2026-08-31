@@ -37,7 +37,7 @@ public class SidebarStats extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage("\u00A77Usage: /sidebarstats <reload|toggle|reset <player>>");
+            sender.sendMessage("\u00A77Usage: /sidebarstats <reload|toggle|reset <player> [stat]|setstreak <player> <amount>>");
             return true;
         }
 
@@ -67,7 +67,7 @@ public class SidebarStats extends JavaPlugin {
                     return true;
                 }
                 if (args.length < 2) {
-                    sender.sendMessage("\u00A77Usage: /sidebarstats reset <player>");
+                    sender.sendMessage("\u00A77Usage: /sidebarstats reset <player> [kills|deaths|streak|all]");
                     return true;
                 }
                 Player target = getServer().getPlayer(args[1]);
@@ -75,12 +75,54 @@ public class SidebarStats extends JavaPlugin {
                     sender.sendMessage("\u00A7cThat player isn't online.");
                     return true;
                 }
-                target.setStatistic(Statistic.PLAYER_KILLS, 0);
-                target.setStatistic(Statistic.DEATHS, 0);
-                StreakListener.resetBestStreak(target, this);
-                sender.sendMessage("\u00A7aReset Kills, Deaths, and Best Streak for " + target.getName() + ".");
+                String stat = args.length >= 3 ? args[2].toLowerCase() : "all";
+                switch (stat) {
+                    case "kills" -> {
+                        target.setStatistic(Statistic.PLAYER_KILLS, 0);
+                        sender.sendMessage("\u00A7aReset Kills for " + target.getName() + ".");
+                    }
+                    case "deaths" -> {
+                        target.setStatistic(Statistic.DEATHS, 0);
+                        sender.sendMessage("\u00A7aReset Deaths for " + target.getName() + ".");
+                    }
+                    case "streak" -> {
+                        StreakListener.resetBestStreak(target, this);
+                        sender.sendMessage("\u00A7aReset Best Streak for " + target.getName() + ".");
+                    }
+                    case "all" -> {
+                        target.setStatistic(Statistic.PLAYER_KILLS, 0);
+                        target.setStatistic(Statistic.DEATHS, 0);
+                        StreakListener.resetBestStreak(target, this);
+                        sender.sendMessage("\u00A7aReset Kills, Deaths, and Best Streak for " + target.getName() + ".");
+                    }
+                    default -> sender.sendMessage("\u00A77Usage: /sidebarstats reset <player> [kills|deaths|streak|all]");
+                }
             }
-            default -> sender.sendMessage("\u00A77Usage: /sidebarstats <reload|toggle|reset <player>>");
+            case "setstreak" -> {
+                if (!sender.hasPermission("sidebarstats.admin")) {
+                    sender.sendMessage("\u00A7cYou don't have permission to do that.");
+                    return true;
+                }
+                if (args.length < 3) {
+                    sender.sendMessage("\u00A77Usage: /sidebarstats setstreak <player> <amount>");
+                    return true;
+                }
+                Player target = getServer().getPlayer(args[1]);
+                if (target == null) {
+                    sender.sendMessage("\u00A7cThat player isn't online.");
+                    return true;
+                }
+                int value;
+                try {
+                    value = Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    sender.sendMessage("\u00A7cThat's not a valid number.");
+                    return true;
+                }
+                StreakListener.setBestStreak(target, this, value);
+                sender.sendMessage("\u00A7aSet " + target.getName() + "'s Best Streak to " + value + ".");
+            }
+            default -> sender.sendMessage("\u00A77Usage: /sidebarstats <reload|toggle|reset <player> [stat]|setstreak <player> <amount>>");
         }
         return true;
     }
