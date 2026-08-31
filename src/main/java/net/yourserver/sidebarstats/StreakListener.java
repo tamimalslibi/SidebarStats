@@ -54,6 +54,4 @@ public class StreakListener implements Listener {
     public static void resetBestStreak(Player player, SidebarStats plugin) {
         PersistentDataContainer pdc = player.getPersistentDataContainer();
         pdc.set(new NamespacedKey(plugin, "best_streak"), PersistentDataType.INTEGER, 0);
-        pdc.set(new NamespacedKey(plugin, "current_streak"), PersistentDataType.INTEGER, 0);
-    }
-}
+        pdc.set(new NamespacedKey(plugin,
